@@ -1,0 +1,58 @@
+package handlers
+
+import (
+	"net/http"
+
+	"github.com/kevinchyd/booking-apps/pkg/models"
+	"github.com/kevinchyd/booking-apps/pkg/config"
+	"github.com/kevinchyd/booking-apps/pkg/render"
+)
+
+//template for holds data had to send
+
+
+var Repo *Repository
+
+type Repository struct {
+	App *config.AppConfig
+}
+
+func NewRepository(app *config.AppConfig) *Repository {
+    return &Repository{App: app}
+}
+
+func NewHandler(r *Repository) {
+	Repo = r;
+}
+
+func (m *Repository) Home(w http.ResponseWriter,r *http.Request){
+
+	remoteIP := r.RemoteAddr
+	m.App.Session.Put(r.Context(),"remote_ip", remoteIP)
+
+	render.RenderTemplate(w, "home.page.html", &models.TemplateData{
+		
+		
+		} )
+		// fmt.Fprintf(w, "this is the home page")
+	}
+	
+	func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
+		//logic
+		StringMap := make(map[string]string)
+		StringMap["test"] = "hello, again"
+
+		// m.App.Session
+		remoteIP := m.App.Session.GetString(r.Context(), "remote_ip")
+		
+		
+		StringMap["remote_ip"] = remoteIP
+	//send data
+		render.RenderTemplate(w, "about.page.html", &models.TemplateData{
+			StringMap: StringMap,
+		})
+
+	// sum:= AddValue(2,2)
+	// _, _= fmt.Fprintf(w, fmt.Sprintf("this is the about page, two plus two is %d",sum))
+}
+
